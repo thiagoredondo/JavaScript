@@ -5,20 +5,28 @@ function ingresarPedido() {
     const cantidadUnidades = parseInt(prompt("Ingrese la cantidad de unidades:"));
     const tipoTrabajo = prompt("Ingrese el tipo de trabajo a realizar (Ej. Estampado, Bordado):");
     const medioPago = prompt("Ingrese el medio de pago (Ej. Efectivo, Tarjeta):");
+    const precioUnitario = parseFloat(prompt("Ingrese el precio unitario del producto:"));
 
     // Validación con condicional
-    if (isNaN(cantidadUnidades) || cantidadUnidades <= 0) {
-        alert("Por favor, ingrese un número válido para la cantidad de unidades.");
+    if (isNaN(cantidadUnidades) || cantidadUnidades <= 0 || isNaN(precioUnitario) || precioUnitario <= 0) {
+        alert("Por favor, ingrese valores válidos para la cantidad de unidades y el precio unitario.");
         return;
     }
 
-    // Mostrar los datos del pedido
+    // Cálculo del subtotal y total con IVA
+    const subtotal = cantidadUnidades * precioUnitario;
+    const totalConIva = subtotal * 1.21; // Agrega el 21% de IVA
+
+    // Crear el objeto del pedido
     const pedido = {
         cliente: nombreCliente,
         descripcion: descripcionPedido,
         cantidad: cantidadUnidades,
         trabajo: tipoTrabajo,
-        pago: medioPago
+        pago: medioPago,
+        precioUnitario: precioUnitario,
+        subtotal: subtotal,
+        totalConIva: totalConIva
     };
 
     mostrarPedido(pedido);
@@ -34,10 +42,13 @@ function mostrarPedido(pedido) {
         Cantidad de Unidades: ${pedido.cantidad}
         Tipo de Trabajo: ${pedido.trabajo}
         Medio de Pago: ${pedido.pago}
+        Precio Unitario: $${pedido.precioUnitario.toFixed(2)}
+        Subtotal: $${pedido.subtotal.toFixed(2)}
+        Total con IVA (21%): $${pedido.totalConIva.toFixed(2)}
     `);
 }
 
-// Ciclo para ingresar varios pedidos
+// Función para ingresar pedidos
 function iniciarSimulador() {
     let agregarOtro = true;
 
@@ -49,10 +60,10 @@ function iniciarSimulador() {
     alert("Gracias por utilizar el simulador de pedidos.");
 }
 
-// Mostrar ventana de bienvenida al cargar la página
+// Mensaje de bienvenida al cargar la página
 window.onload = function () {
     const iniciar = confirm("Bienvenido al sistema de ingreso de pedidos de Serigrafía Gomez. ¿Desea iniciar el sistema?");
-
+    
     if (iniciar) {
         iniciarSimulador();
     } else {
