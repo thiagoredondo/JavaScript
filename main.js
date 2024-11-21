@@ -1,72 +1,140 @@
-// Función para ingresar pedidos de una Serigrafía
-function ingresarPedido() {
+// Array para almacenar los pedidos
+const pedidos = [];
+
+// Clase Pedido
+class Pedido {
+    constructor(cliente, descripcion, cantidad, trabajo, pago, precioUnitario) {
+        this.cliente = cliente;
+        this.descripcion = descripcion;
+        this.cantidad = cantidad;
+        this.trabajo = trabajo;
+        this.pago = pago;
+        this.precioUnitario = precioUnitario;
+        this.subtotal = this.calcularSubtotal();
+        this.totalConIva = this.calcularTotalConIva();
+    }
+
+    calcularSubtotal() {
+        return this.cantidad * this.precioUnitario;
+    }
+
+    calcularTotalConIva() {
+        return this.subtotal * 1.21;
+    }
+}
+
+// Función para registrar un pedido
+function registrarPedido() {
     const nombreCliente = prompt("Ingrese el nombre del cliente:");
     const descripcionPedido = prompt("Ingrese una descripción del pedido:");
     const cantidadUnidades = parseInt(prompt("Ingrese la cantidad de unidades:"));
-    const tipoTrabajo = prompt("Ingrese el tipo de trabajo a realizar (Ej. Estampado, Bordado):");
+    const tipoTrabajo = prompt("Ingrese el tipo de trabajo (Ej. Estampado, Bordado):");
     const medioPago = prompt("Ingrese el medio de pago (Ej. Efectivo, Tarjeta):");
     const precioUnitario = parseFloat(prompt("Ingrese el precio unitario del producto:"));
 
-    // Validación con condicional
     if (isNaN(cantidadUnidades) || cantidadUnidades <= 0 || isNaN(precioUnitario) || precioUnitario <= 0) {
         alert("Por favor, ingrese valores válidos para la cantidad de unidades y el precio unitario.");
         return;
     }
 
-    // Cálculo del subtotal y total con IVA
-    const subtotal = cantidadUnidades * precioUnitario;
-    const totalConIva = subtotal * 1.21; // Agrega el 21% de IVA
+    const nuevoPedido = new Pedido(
+        nombreCliente,
+        descripcionPedido,
+        cantidadUnidades,
+        tipoTrabajo,
+        medioPago,
+        precioUnitario
+    );
 
-    // Crear el objeto del pedido
-    const pedido = {
-        cliente: nombreCliente,
-        descripcion: descripcionPedido,
-        cantidad: cantidadUnidades,
-        trabajo: tipoTrabajo,
-        pago: medioPago,
-        precioUnitario: precioUnitario,
-        subtotal: subtotal,
-        totalConIva: totalConIva
-    };
-
-    mostrarPedido(pedido);
+    pedidos.push(nuevoPedido);
+    alert("Pedido registrado exitosamente.");
 }
 
-// Función para mostrar los datos de cada pedido
-function mostrarPedido(pedido) {
-    // Muestra el resumen del pedido en una ventana emergente
-    alert(`
-        Resumen del Pedido:
+// Función para mostrar todos los pedidos
+function mostrarPedidos() {
+    if (pedidos.length === 0) {
+        alert("No hay pedidos registrados.");
+        return;
+    }
+
+    let listaPedidos = "Lista de pedidos registrados:\n";
+    pedidos.forEach((pedido, index) => {
+        listaPedidos += `
+        Pedido #${index + 1}:
         Cliente: ${pedido.cliente}
         Descripción: ${pedido.descripcion}
-        Cantidad de Unidades: ${pedido.cantidad}
-        Tipo de Trabajo: ${pedido.trabajo}
+        Cantidad: ${pedido.cantidad}
+        Trabajo: ${pedido.trabajo}
         Medio de Pago: ${pedido.pago}
         Precio Unitario: $${pedido.precioUnitario.toFixed(2)}
         Subtotal: $${pedido.subtotal.toFixed(2)}
-        Total con IVA (21%): $${pedido.totalConIva.toFixed(2)}
-    `);
+        Total con IVA: $${pedido.totalConIva.toFixed(2)}\n`;
+    });
+
+    alert(listaPedidos);
+    console.log(listaPedidos);
 }
 
-// Función para ingresar pedidos
+// Función para buscar pedidos por cliente
+function buscarPedidosPorCliente() {
+    const clienteBuscado = prompt("Ingrese el nombre del cliente a buscar:");
+    const resultados = pedidos.filter((pedido) => pedido.cliente.toLowerCase() === clienteBuscado.toLowerCase());
+
+    if (resultados.length === 0) {
+        alert(`No se encontraron pedidos para el cliente "${clienteBuscado}".`);
+        return;
+    }
+
+    let resultadosTexto = `Pedidos encontrados para el cliente "${clienteBuscado}":\n`;
+    resultados.forEach((pedido, index) => {
+        resultadosTexto += `
+        Pedido #${index + 1}:
+        Descripción: ${pedido.descripcion}
+        Cantidad: ${pedido.cantidad}
+        Trabajo: ${pedido.trabajo}
+        Medio de Pago: ${pedido.pago}
+        Precio Unitario: $${pedido.precioUnitario.toFixed(2)}
+        Subtotal: $${pedido.subtotal.toFixed(2)}
+        Total con IVA: $${pedido.totalConIva.toFixed(2)}\n`;
+    });
+
+    alert(resultadosTexto);
+    console.log(resultadosTexto);
+}
+
+// Función principal del menú
 function iniciarSimulador() {
-    let agregarOtro = true;
+    let continuar = true;
 
-    while (agregarOtro) {
-        ingresarPedido();
-        agregarOtro = confirm("¿Desea ingresar otro pedido?");
+    while (continuar) {
+        const opcion = parseInt(prompt(`Seleccione una opción:
+        1. Registrar un pedido
+        2. Mostrar todos los pedidos
+        3. Buscar pedidos por cliente
+        4. Salir
+        `));
+
+        switch (opcion) {
+            case 1:
+                registrarPedido();
+                break;
+            case 2:
+                mostrarPedidos();
+                break;
+            case 3:
+                buscarPedidosPorCliente();
+                break;
+            case 4:
+                continuar = false;
+                alert("Gracias por usar el simulador.");
+                break;
+            default:
+                alert("Por favor, seleccione una opción válida.");
+        }
     }
-
-    alert("Gracias por utilizar el simulador de pedidos.");
 }
 
-// Mensaje de bienvenida al cargar la página
+// Inicio del sistema
 window.onload = function () {
-    const iniciar = confirm("Bienvenido al sistema de ingreso de pedidos de Serigrafía Gomez. ¿Desea iniciar el sistema?");
-    
-    if (iniciar) {
-        iniciarSimulador();
-    } else {
-        alert("Gracias por visitar el sitio. Puede iniciar el sistema en cualquier momento.");
-    }
+    iniciarSimulador();
 };
