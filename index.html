@@ -3,12 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Pedidos - Redondo Thiago</title>
+    <title>Simulador de Pedidos - Serigrafia Gomez</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Simulador de Pedidos - Redondo Thiago</h1>
-    <p>Utiliza el sistema para registrar y gestionar pedidos de manera sencilla.</p>
+    <header>
+        <h1>Simulador de Pedidos - Serigrafia Gomez</h1>
+        <p>Utiliza el sistema para registrar y gestionar pedidos de manera sencilla.</p>
+    </header>
+
+    <main>
+        <!-- Formulario para registrar pedidos -->
+        <section>
+            <h2>Registrar Pedido</h2>
+            <form id="formulario-pedido">
+                <input type="text" id="cliente" placeholder="Nombre del cliente" required>
+                <input type="text" id="descripcion" placeholder="Descripción del pedido" required>
+                <input type="number" id="cantidad" placeholder="Cantidad de unidades" required>
+                <input type="text" id="trabajo" placeholder="Tipo de trabajo (Ej. Estampado)" required>
+                <input type="text" id="pago" placeholder="Medio de pago (Ej. Efectivo)" required>
+                <input type="number" step="0.01" id="precioUnitario" placeholder="Precio unitario" required>
+                <button type="submit">Registrar Pedido</button>
+            </form>
+        </section>
+
+        <!-- Sección para buscar pedidos -->
+        <section>
+            <h2>Buscar Pedidos</h2>
+            <input type="text" id="buscar-cliente" placeholder="Nombre del cliente">
+            <button id="boton-buscar">Buscar</button>
+        </section>
+
+        <!-- Mensajes de retroalimentación -->
+        <div id="mensaje"></div>
+
+        <!-- Lista de pedidos -->
+        <section>
+            <h2>Lista de Pedidos</h2>
+            <div id="lista-pedidos"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Desarrollado por Redondo Thiago</p>
+    </footer>
+
     <script src="main.js"></script>
 </body>
 </html>

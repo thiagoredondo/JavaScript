@@ -1,5 +1,5 @@
 // Array para almacenar los pedidos
-const pedidos = [];
+let pedidos = JSON.parse(localStorage.getItem("pedidos")) || [];
 
 // Clase Pedido
 class Pedido {
@@ -23,118 +23,111 @@ class Pedido {
     }
 }
 
-// Función para registrar un pedido
-function registrarPedido() {
-    const nombreCliente = prompt("Ingrese el nombre del cliente:");
-    const descripcionPedido = prompt("Ingrese una descripción del pedido:");
-    const cantidadUnidades = parseInt(prompt("Ingrese la cantidad de unidades:"));
-    const tipoTrabajo = prompt("Ingrese el tipo de trabajo (Ej. Estampado, Bordado):");
-    const medioPago = prompt("Ingrese el medio de pago (Ej. Efectivo, Tarjeta):");
-    const precioUnitario = parseFloat(prompt("Ingrese el precio unitario del producto:"));
+// Función para guardar pedidos en localStorage
+function guardarPedidosEnStorage() {
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+}
 
-    if (isNaN(cantidadUnidades) || cantidadUnidades <= 0 || isNaN(precioUnitario) || precioUnitario <= 0) {
-        alert("Por favor, ingrese valores válidos para la cantidad de unidades y el precio unitario.");
+// Función para registrar un pedido
+function registrarPedido(event) {
+    event.preventDefault(); // Evita el envío del formulario
+
+    const cliente = document.getElementById("cliente").value;
+    const descripcion = document.getElementById("descripcion").value;
+    const cantidad = parseInt(document.getElementById("cantidad").value);
+    const trabajo = document.getElementById("trabajo").value;
+    const pago = document.getElementById("pago").value;
+    const precioUnitario = parseFloat(document.getElementById("precioUnitario").value);
+
+    if (isNaN(cantidad) || cantidad <= 0 || isNaN(precioUnitario) || precioUnitario <= 0) {
+        mostrarMensaje("Por favor, ingrese valores válidos.", "error");
         return;
     }
 
-    const nuevoPedido = new Pedido(
-        nombreCliente,
-        descripcionPedido,
-        cantidadUnidades,
-        tipoTrabajo,
-        medioPago,
-        precioUnitario
-    );
-
+    const nuevoPedido = new Pedido(cliente, descripcion, cantidad, trabajo, pago, precioUnitario);
     pedidos.push(nuevoPedido);
-    alert("Pedido registrado exitosamente.");
+    guardarPedidosEnStorage();
+    mostrarPedidos();
+    mostrarMensaje("Pedido registrado exitosamente.", "success");
+
+    // Resetea el formulario
+    document.getElementById("formulario-pedido").reset();
 }
 
 // Función para mostrar todos los pedidos
 function mostrarPedidos() {
+    const contenedor = document.getElementById("lista-pedidos");
+    contenedor.innerHTML = "";
+
     if (pedidos.length === 0) {
-        alert("No hay pedidos registrados.");
+        contenedor.innerHTML = "<p>No hay pedidos registrados.</p>";
         return;
     }
 
-    let listaPedidos = "Lista de pedidos registrados:\n";
     pedidos.forEach((pedido, index) => {
-        listaPedidos += `
-        Pedido #${index + 1}:
-        Cliente: ${pedido.cliente}
-        Descripción: ${pedido.descripcion}
-        Cantidad: ${pedido.cantidad}
-        Trabajo: ${pedido.trabajo}
-        Medio de Pago: ${pedido.pago}
-        Precio Unitario: $${pedido.precioUnitario.toFixed(2)}
-        Subtotal: $${pedido.subtotal.toFixed(2)}
-        Total con IVA: $${pedido.totalConIva.toFixed(2)}\n`;
+        const pedidoElement = document.createElement("div");
+        pedidoElement.classList.add("pedido");
+        pedidoElement.innerHTML = `
+            <h3>Pedido #${index + 1}</h3>
+            <p><strong>Cliente:</strong> ${pedido.cliente}</p>
+            <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+            <p><strong>Cantidad:</strong> ${pedido.cantidad}</p>
+            <p><strong>Trabajo:</strong> ${pedido.trabajo}</p>
+            <p><strong>Medio de Pago:</strong> ${pedido.pago}</p>
+            <p><strong>Precio Unitario:</strong> $${pedido.precioUnitario.toFixed(2)}</p>
+            <p><strong>Subtotal:</strong> $${pedido.subtotal.toFixed(2)}</p>
+            <p><strong>Total con IVA:</strong> $${pedido.totalConIva.toFixed(2)}</p>
+        `;
+        contenedor.appendChild(pedidoElement);
     });
-
-    alert(listaPedidos);
-    console.log(listaPedidos);
 }
 
 // Función para buscar pedidos por cliente
 function buscarPedidosPorCliente() {
-    const clienteBuscado = prompt("Ingrese el nombre del cliente a buscar:");
-    const resultados = pedidos.filter((pedido) => pedido.cliente.toLowerCase() === clienteBuscado.toLowerCase());
+    const clienteBuscado = document.getElementById("buscar-cliente").value.toLowerCase();
+    const resultados = pedidos.filter((pedido) => pedido.cliente.toLowerCase() === clienteBuscado);
+
+    const contenedor = document.getElementById("lista-pedidos");
+    contenedor.innerHTML = "";
 
     if (resultados.length === 0) {
-        alert(`No se encontraron pedidos para el cliente "${clienteBuscado}".`);
+        contenedor.innerHTML = `<p>No se encontraron pedidos para el cliente "${clienteBuscado}".</p>`;
         return;
     }
 
-    let resultadosTexto = `Pedidos encontrados para el cliente "${clienteBuscado}":\n`;
     resultados.forEach((pedido, index) => {
-        resultadosTexto += `
-        Pedido #${index + 1}:
-        Descripción: ${pedido.descripcion}
-        Cantidad: ${pedido.cantidad}
-        Trabajo: ${pedido.trabajo}
-        Medio de Pago: ${pedido.pago}
-        Precio Unitario: $${pedido.precioUnitario.toFixed(2)}
-        Subtotal: $${pedido.subtotal.toFixed(2)}
-        Total con IVA: $${pedido.totalConIva.toFixed(2)}\n`;
+        const pedidoElement = document.createElement("div");
+        pedidoElement.classList.add("pedido");
+        pedidoElement.innerHTML = `
+            <h3>Pedido #${index + 1}</h3>
+            <p><strong>Cliente:</strong> ${pedido.cliente}</p>
+            <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+            <p><strong>Cantidad:</strong> ${pedido.cantidad}</p>
+            <p><strong>Trabajo:</strong> ${pedido.trabajo}</p>
+            <p><strong>Medio de Pago:</strong> ${pedido.pago}</p>
+            <p><strong>Precio Unitario:</strong> $${pedido.precioUnitario.toFixed(2)}</p>
+            <p><strong>Subtotal:</strong> $${pedido.subtotal.toFixed(2)}</p>
+            <p><strong>Total con IVA:</strong> $${pedido.totalConIva.toFixed(2)}</p>
+        `;
+        contenedor.appendChild(pedidoElement);
     });
-
-    alert(resultadosTexto);
-    console.log(resultadosTexto);
 }
 
-// Función principal del menú
-function iniciarSimulador() {
-    let continuar = true;
+// Función para mostrar un mensaje al usuario
+function mostrarMensaje(mensaje, tipo) {
+    const contenedor = document.getElementById("mensaje");
+    contenedor.textContent = mensaje;
+    contenedor.className = tipo;
 
-    while (continuar) {
-        const opcion = parseInt(prompt(`Seleccione una opción:
-        1. Registrar un pedido
-        2. Mostrar todos los pedidos
-        3. Buscar pedidos por cliente
-        4. Salir
-        `));
-
-        switch (opcion) {
-            case 1:
-                registrarPedido();
-                break;
-            case 2:
-                mostrarPedidos();
-                break;
-            case 3:
-                buscarPedidosPorCliente();
-                break;
-            case 4:
-                continuar = false;
-                alert("Gracias por usar el simulador.");
-                break;
-            default:
-                alert("Por favor, seleccione una opción válida.");
-        }
-    }
+    setTimeout(() => {
+        contenedor.textContent = "";
+        contenedor.className = "";
+    }, 3000);
 }
 
-// Inicio del sistema
-window.onload = function () {
-    iniciarSimulador();
-};
+// Event Listeners
+document.getElementById("formulario-pedido").addEventListener("submit", registrarPedido);
+document.getElementById("boton-buscar").addEventListener("click", buscarPedidosPorCliente);
+
+// Mostrar pedidos al cargar la página
+window.onload = mostrarPedidos;
